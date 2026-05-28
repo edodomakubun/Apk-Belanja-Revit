@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, BookText, Tags, LogOut, Download } from "lucide-react";
+import { LayoutDashboard, BookText, Tags, LogOut, Download, ActivitySquare, Settings } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
 const navItems = [
@@ -11,6 +11,8 @@ const navItems = [
   { href: "/kas", label: "Buku Kas", icon: BookText },
   { href: "/pos", label: "Pos Belanja", icon: Tags, adminOnly: true },
   { href: "/export", label: "Export", icon: Download },
+  { href: "/audit", label: "Audit Log", icon: ActivitySquare, adminOnly: true },
+  { href: "/settings", label: "Pengaturan", icon: Settings, adminOnly: true },
 ];
 
 export function Sidebar() {

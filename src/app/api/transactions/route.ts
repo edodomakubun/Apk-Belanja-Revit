@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { cashTransactions } from "@/db/schema";
 import { requireAuth } from "@/lib/auth";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, asc, and } from "drizzle-orm";
 
 export async function GET(request: Request) {
   const auth = await requireAuth();
@@ -15,14 +15,25 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "roomId is required" }, { status: 400 });
   }
 
-  const data = await db
+  // Get data ascending to calculate running balance correctly
+  const rawData = await db
     .select()
     .from(cashTransactions)
-    .where(eq(cashTransactions.roomId, roomId))
-    .orderBy(desc(cashTransactions.transactionDate), desc(cashTransactions.createdAt))
+    .where(and(eq(cashTransactions.roomId, roomId), eq(cashTransactions.schoolId, auth.schoolId)))
+    .orderBy(asc(cashTransactions.transactionDate), asc(cashTransactions.createdAt))
     .all();
 
-  return NextResponse.json(data);
+  let currentBalance = 0;
+  const processedData = rawData.map((tx) => {
+    // Only approved transactions affect the balance
+    if (tx.status === "APPROVED") {
+      currentBalance += tx.debit - tx.credit;
+    }
+    return { ...tx, balanceAfter: currentBalance };
+  });
+
+  // Return descending to UI for newest-first display
+  return NextResponse.json(processedData.reverse());
 }
 
 export async function POST(request: Request) {
@@ -32,18 +43,6 @@ export async function POST(request: Request) {
   const body = await request.json();
   const id = crypto.randomUUID();
 
-  // Calculate balance
-  // In a real robust system, you'd calculate this safely in a transaction to prevent race conditions.
-  // For MVP, we get the last transaction for this room.
-  const lastTx = await db
-    .select({ balanceAfter: cashTransactions.balanceAfter })
-    .from(cashTransactions)
-    .where(eq(cashTransactions.roomId, body.roomId))
-    .orderBy(desc(cashTransactions.transactionDate), desc(cashTransactions.createdAt))
-    .limit(1)
-    .get();
-
-  const balanceBefore = lastTx?.balanceAfter || 0;
   const debit = Number(body.debit) || 0;
   const credit = Number(body.credit) || 0;
 
@@ -51,23 +50,27 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Debit and credit cannot be negative" }, { status: 400 });
   }
 
-  const balanceAfter = balanceBefore + debit - credit;
+  // We no longer calculate static balance before/after at insert time due to approval/rejection workflows
+  // which can permanently corrupt the balances. It will be computed at runtime when queried.
+  // We keep the fields in schema for backward compatibility but default them to 0.
 
   const newTx = {
     id,
+    schoolId: auth.schoolId,
     roomId: body.roomId,
     categoryId: body.categoryId || null,
     transactionDate: body.transactionDate,
     description: body.description,
     debit,
     credit,
-    balanceBefore,
-    balanceAfter,
+    balanceBefore: 0,
+    balanceAfter: 0,
     notes: body.notes,
+    status: auth.role === "ADMIN" ? "APPROVED" : "PENDING",
     createdBy: auth.id,
   };
 
-  await db.insert(cashTransactions).values(newTx);
+  await db.insert(cashTransactions).values(newTx as any);
 
   return NextResponse.json(newTx, { status: 201 });
 }

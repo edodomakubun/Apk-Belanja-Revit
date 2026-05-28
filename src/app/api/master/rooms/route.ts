@@ -11,12 +11,17 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
   const buildingId = url.searchParams.get("buildingId");
 
-  let query = db.select().from(rooms);
+  let query = db.select().from(rooms).where(eq(rooms.schoolId, auth.schoolId));
+  // Need custom type-safe approach since we used dynamic query earlier which had TS issues
+  let data;
   if (buildingId) {
-    query = query.where(eq(rooms.buildingId, buildingId)) as any;
+    data = await db.select().from(rooms).where(eq(rooms.buildingId, buildingId)).all();
+    // In real app we'd combine where eq schoolId AND eq buildingId
+    data = data.filter(r => r.schoolId === auth.schoolId);
+  } else {
+    data = await query.all();
   }
 
-  const data = await query.all();
   return NextResponse.json(data);
 }
 
@@ -27,6 +32,6 @@ export async function POST(request: Request) {
 
   const body = await request.json();
   const id = crypto.randomUUID();
-  await db.insert(rooms).values({ id, buildingId: body.buildingId, name: body.name });
+  await db.insert(rooms).values({ id, schoolId: auth.schoolId, buildingId: body.buildingId, name: body.name });
   return NextResponse.json({ id, buildingId: body.buildingId, name: body.name }, { status: 201 });
 }

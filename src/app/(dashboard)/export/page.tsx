@@ -69,9 +69,17 @@ export default function ExportPage() {
           </Select>
         </div>
 
-        <Button onClick={handleExport} disabled={!selectedRoom} className="w-full">
-          <Download className="w-4 h-4 mr-2" /> Download Excel
-        </Button>
+        <div className="flex gap-4">
+          <Button onClick={() => window.location.href = `/api/export?roomId=${selectedRoom}`} disabled={!selectedRoom} className="flex-1" variant="outline">
+            <Download className="w-4 h-4 mr-2" /> Excel (.xlsx)
+          </Button>
+          <Button onClick={() => window.location.href = `/api/export/pdf?roomId=${selectedRoom}`} disabled={!selectedRoom} className="flex-1 bg-red-600 hover:bg-red-700 text-white">
+            <Download className="w-4 h-4 mr-2" /> PDF (.pdf)
+          </Button>
+          <Button onClick={() => window.location.href = `/api/export/word?roomId=${selectedRoom}`} disabled={!selectedRoom} className="flex-1 bg-blue-600 hover:bg-blue-700 text-white">
+            <Download className="w-4 h-4 mr-2" /> Word (.docx)
+          </Button>
+        </div>
       </div>
     </div>
   );

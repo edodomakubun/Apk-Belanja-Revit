@@ -19,6 +19,7 @@ interface Transaction {
   balanceBefore: number;
   balanceAfter: number;
   notes: string | null;
+  status: "PENDING" | "APPROVED" | "REJECTED";
 }
 
 export default function KasPage() {
@@ -200,6 +201,8 @@ export default function KasPage() {
                 <TableHead className="text-right">Kredit</TableHead>
                 <TableHead className="text-right">Saldo</TableHead>
                 <TableHead>Keterangan</TableHead>
+                <TableHead>Status</TableHead>
+                {user?.role === "ADMIN" && <TableHead>Aksi</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -211,6 +214,27 @@ export default function KasPage() {
                   <TableCell className="text-right text-red-600">{tx.credit > 0 ? formatRp(tx.credit) : "-"}</TableCell>
                   <TableCell className="text-right font-medium">{formatRp(tx.balanceAfter)}</TableCell>
                   <TableCell>{tx.notes}</TableCell>
+                  <TableCell>
+                    <span className={`px-2 py-1 text-xs rounded-full font-medium ${tx.status === 'APPROVED' ? 'bg-green-100 text-green-800' : tx.status === 'REJECTED' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                      {tx.status}
+                    </span>
+                  </TableCell>
+                  {user?.role === "ADMIN" && (
+                    <TableCell>
+                      {tx.status === "PENDING" && (
+                        <div className="flex gap-2">
+                          <Button size="sm" variant="outline" className="text-green-600 border-green-200" onClick={async () => {
+                            await fetch('/api/transactions/approve', { method: 'POST', body: JSON.stringify({ id: tx.id, status: 'APPROVED' }) });
+                            fetchTransactions(selectedRoom);
+                          }}>Setujui</Button>
+                          <Button size="sm" variant="outline" className="text-red-600 border-red-200" onClick={async () => {
+                            await fetch('/api/transactions/approve', { method: 'POST', body: JSON.stringify({ id: tx.id, status: 'REJECTED' }) });
+                            fetchTransactions(selectedRoom);
+                          }}>Tolak</Button>
+                        </div>
+                      )}
+                    </TableCell>
+                  )}
                 </TableRow>
               ))}
               {transactions.length === 0 && (

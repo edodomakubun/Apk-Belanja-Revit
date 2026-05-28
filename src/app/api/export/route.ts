@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { cashTransactions, rooms, buildings } from "@/db/schema";
 import { requireAuth } from "@/lib/auth";
-import { eq, asc } from "drizzle-orm";
+import { eq, and, asc } from "drizzle-orm";
 import ExcelJS from "exceljs";
 
 export async function GET(request: Request) {
@@ -17,7 +17,7 @@ export async function GET(request: Request) {
   }
 
   // Get room and building info
-  const roomData = await db.select().from(rooms).where(eq(rooms.id, roomId)).get();
+  const roomData = await db.select().from(rooms).where(and(eq(rooms.id, roomId), eq(rooms.schoolId, auth.schoolId))).get();
   if (!roomData) return NextResponse.json({ error: "Room not found" }, { status: 404 });
 
   const buildingData = await db.select().from(buildings).where(eq(buildings.id, roomData.buildingId)).get();
@@ -27,7 +27,7 @@ export async function GET(request: Request) {
   const transactions = await db
     .select()
     .from(cashTransactions)
-    .where(eq(cashTransactions.roomId, roomId))
+    .where(and(eq(cashTransactions.roomId, roomId), eq(cashTransactions.schoolId, auth.schoolId), eq(cashTransactions.status, "APPROVED")))
     .orderBy(asc(cashTransactions.transactionDate), asc(cashTransactions.createdAt))
     .all();
 
@@ -91,9 +91,14 @@ export async function GET(request: Request) {
 
   let totalDebet = 0;
   let totalKredit = 0;
+  let runningBalance = 0;
 
   // Add Data Rows
   transactions.forEach((tx, index) => {
+    runningBalance += tx.debit - tx.credit;
+    totalDebet += tx.debit;
+    totalKredit += tx.credit;
+
     const row = sheet.addRow([
       index + 1,
       tx.transactionDate,
@@ -101,11 +106,8 @@ export async function GET(request: Request) {
       tx.notes || "-",
       tx.debit > 0 ? tx.debit : "-",
       tx.credit > 0 ? tx.credit : "-",
-      tx.balanceAfter
+      runningBalance
     ]);
-
-    totalDebet += tx.debit;
-    totalKredit += tx.credit;
 
     row.getCell(5).numFmt = '#,##0';
     row.getCell(6).numFmt = '#,##0';
@@ -118,7 +120,7 @@ export async function GET(request: Request) {
   });
 
   // Footer / Rekap Row
-  const footerRow = sheet.addRow(["", "", "JUMLAH", "", totalDebet, totalKredit, transactions[transactions.length - 1]?.balanceAfter || 0]);
+  const footerRow = sheet.addRow(["", "", "JUMLAH", "", totalDebet, totalKredit, runningBalance]);
   footerRow.getCell(3).font = { bold: true };
   footerRow.getCell(3).alignment = { horizontal: "right" };
   footerRow.getCell(5).font = { bold: true };

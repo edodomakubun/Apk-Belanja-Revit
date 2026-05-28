@@ -28,9 +28,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
-    await login(userRecord.id, userRecord.username, userRecord.role);
+    await login(userRecord.id, userRecord.username, userRecord.role, userRecord.schoolId!);
 
-    return NextResponse.json({ message: "Success", user: { id: userRecord.id, username: userRecord.username, role: userRecord.role } });
+    return NextResponse.json({ message: "Success", user: { id: userRecord.id, username: userRecord.username, role: userRecord.role, schoolId: userRecord.schoolId } });
   } catch (error) {
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }

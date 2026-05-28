@@ -20,9 +20,9 @@ export async function decrypt(input: string): Promise<any> {
   return payload;
 }
 
-export async function login(userId: string, username: string, role: string) {
+export async function login(userId: string, username: string, role: string, schoolId: string) {
   // Use non-dynamic cookie functions
-  const user = { id: userId, username, role };
+  const user = { id: userId, username, role, schoolId };
   const expires = new Date(Date.now() + 8 * 60 * 60 * 1000); // 8 hours
   const session = await encrypt({ user, expires });
 

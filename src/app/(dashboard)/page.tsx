@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Wallet, TrendingDown, TrendingUp, Activity } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 
 export default function DashboardPage() {
   const { user, loading } = useAuth();
@@ -12,6 +13,7 @@ export default function DashboardPage() {
     totalPengeluaran: 0,
     totalSaldo: 0,
     totalTransaksi: 0,
+    chartData: [],
   });
 
   useEffect(() => {
@@ -78,6 +80,28 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{data.totalTransaksi}</div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2">
+        <Card className="col-span-2 md:col-span-1">
+          <CardHeader>
+            <CardTitle>Pengeluaran per Bangunan</CardTitle>
+          </CardHeader>
+          <CardContent className="h-[300px]">
+            {data.chartData.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={data.chartData}>
+                  <XAxis dataKey="name" fontSize={12} tickLine={false} axisLine={false} />
+                  <YAxis fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `Rp${value / 1000}k`} />
+                  <Tooltip cursor={{ fill: 'transparent' }} formatter={(value: any) => formatRupiah(Number(value))} />
+                  <Bar dataKey="total" fill="var(--color-primary)" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-full flex items-center justify-center text-muted-foreground">Belum ada data pengeluaran</div>
+            )}
           </CardContent>
         </Card>
       </div>

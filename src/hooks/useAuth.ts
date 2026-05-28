@@ -7,6 +7,7 @@ export interface User {
   id: string;
   username: string;
   role: "ADMIN" | "BENDAHARA";
+  schoolId: string;
 }
 
 export function useAuth() {
