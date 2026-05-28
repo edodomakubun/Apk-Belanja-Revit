@@ -18,8 +18,9 @@ npm install
 npm install -D @cloudflare/next-on-pages wrangler
 ```
 
-> `@cloudflare/next-on-pages` diperlukan untuk build Next.js versi 16 pada Cloudflare Pages.
-> `wrangler` berguna untuk deploy CLI dan manajemen Pages.
+> `@cloudflare/next-on-pages` diperlukan untuk build Next.js dengan Cloudflare Pages.
+> Gunakan `next@15.5.2` dengan adapter ini, karena versi `next@16` belum didukung oleh `@cloudflare/next-on-pages`.
+> `wrangler` dibutuhkan untuk deploy CLI dan manajemen Pages.
 
 ## 3. Konfigurasi `package.json`
 
