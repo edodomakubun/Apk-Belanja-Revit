@@ -12,6 +12,7 @@ compatibility_flags = ["nodejs_compat"]
 
 [build]
 command = "npm run build"
+pages_build_output_dir = "."
 
 [[d1_databases]]
 binding = "kas_sekolah_db"
