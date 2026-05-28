@@ -1,3 +1,5 @@
+
+
 import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { cashTransactions, rooms, buildings, schools } from "@/db/schema";
@@ -5,7 +7,6 @@ import { requireAuth } from "@/lib/auth";
 import { eq, and, asc } from "drizzle-orm";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-export const runtime = "edge";
 
 export async function GET(request: Request) {
   const auth = await requireAuth();

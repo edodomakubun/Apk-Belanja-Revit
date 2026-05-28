@@ -1,9 +1,10 @@
+
+
 import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { rooms } from "@/db/schema";
 import { requireAuth } from "@/lib/auth";
 import { eq } from "drizzle-orm";
-export const runtime = "edge";
 
 export async function GET(request: Request) {
   const auth = await requireAuth();
