@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { cashTransactions } from "@/db/schema";
 import { requireAuth } from "@/lib/auth";
 import { eq, desc, asc, and } from "drizzle-orm";
+export const runtime = "edge";
 
 export async function GET(request: Request) {
   const auth = await requireAuth();

@@ -4,6 +4,7 @@ import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import { login } from "@/lib/auth";
+export const runtime = "edge";
 
 export async function POST(request: Request) {
   try {

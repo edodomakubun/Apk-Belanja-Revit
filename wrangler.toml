@@ -1,0 +1,25 @@
+name = "apk-belanja-revit"
+
+# Ganti dengan account_id Cloudflare Anda
+account_id = "YOUR_ACCOUNT_ID"
+
+# Gunakan tanggal kompatibilitas terbaru jika perlu
+compatibility_date = "2026-05-28"
+compatibility_flags = ["nodejs_compat"]
+
+# Jika ingin deploy Pages melalui CLI, gunakan `wrangler pages deploy .`
+# Untuk Pages, `site` dan `route` biasanya tidak perlu jika deploy di root.
+
+[build]
+command = "npm run build"
+
+[[d1_databases]]
+binding = "kas_sekolah_db"
+database_name = "kas-sekolah-db"
+database_id = "860066c9-834c-4440-b361-cbb7396b7ccd"
+preview_database_id = "kas_sekolah_db"
+
+[vars]
+# Tambahkan variabel global yang ingin di-set di CLI jika diperlukan
+# JWT_SECRET = "your-jwt-secret"
+# DB_URL = "your-libsql-or-d1-url"

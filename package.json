@@ -2,12 +2,13 @@
   "name": "kas-app",
   "version": "0.1.0",
   "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next-on-pages",
-    "start": "next start",
-    "lint": "eslint"
-  },
+"scripts": {
+  "dev": "next dev",
+  "build": "next-on-pages",
+  "start": "next start",
+  "lint": "eslint",
+  "deploy": "wrangler pages deploy . --project-name=apk-belanja-revit"
+},
   "dependencies": {
     "@base-ui/react": "^1.5.0",
     "@libsql/client": "^0.17.3",
@@ -42,6 +43,8 @@
     "eslint-config-next": "16.2.6",
     "tailwindcss": "^4",
     "tsx": "^4.22.3",
-    "typescript": "^5"
+    "typescript": "^5",
+    "next-on-pages": "^1.0.0",
+    "wrangler": "^4.0.0"
   }
 }

@@ -4,6 +4,7 @@ import { cashTransactions, rooms, buildings, schools } from "@/db/schema";
 import { requireAuth } from "@/lib/auth";
 import { eq, and, asc } from "drizzle-orm";
 import { Document, Packer, Paragraph, Table, TableCell, TableRow, TextRun, AlignmentType, WidthType, BorderStyle } from "docx";
+export const runtime = "edge";
 
 export async function GET(request: Request) {
   const auth = await requireAuth();
