@@ -1,5 +1,4 @@
 
-
 import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { rooms } from "@/db/schema";
@@ -19,7 +18,7 @@ export async function GET(request: Request) {
   if (buildingId) {
     data = await db.select().from(rooms).where(eq(rooms.buildingId, buildingId)).all();
     // In real app we'd combine where eq schoolId AND eq buildingId
-    data = data.filter(r => r.schoolId === auth.schoolId);
+    data = data.filter((r: any) => r.schoolId === auth.schoolId);
   } else {
     data = await query.all();
   }

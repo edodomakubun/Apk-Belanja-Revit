@@ -1,5 +1,4 @@
 
-
 import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { cashTransactions, rooms, buildings, schools } from "@/db/schema";
@@ -42,7 +41,7 @@ export async function GET(request: Request) {
     ),
   });
 
-  const dataRows = transactions.map((tx, idx) => {
+  const dataRows = transactions.map((tx: any, idx: number) => {
     totalDebet += tx.debit;
     totalKredit += tx.credit;
     runningBalance += tx.debit - tx.credit;

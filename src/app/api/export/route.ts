@@ -1,5 +1,4 @@
 
-
 import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { cashTransactions, rooms, buildings } from "@/db/schema";
@@ -96,7 +95,7 @@ export async function GET(request: Request) {
   let runningBalance = 0;
 
   // Add Data Rows
-  transactions.forEach((tx, index) => {
+  transactions.forEach((tx: any, index: number) => {
     runningBalance += tx.debit - tx.credit;
     totalDebet += tx.debit;
     totalKredit += tx.credit;

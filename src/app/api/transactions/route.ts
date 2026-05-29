@@ -1,5 +1,4 @@
 
-
 import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { cashTransactions } from "@/db/schema";
@@ -26,7 +25,7 @@ export async function GET(request: Request) {
     .all();
 
   let currentBalance = 0;
-  const processedData = rawData.map((tx) => {
+  const processedData = rawData.map((tx: any) => {
     // Only approved transactions affect the balance
     if (tx.status === "APPROVED") {
       currentBalance += tx.debit - tx.credit;

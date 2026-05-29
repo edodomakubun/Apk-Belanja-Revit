@@ -1,5 +1,4 @@
 
-
 import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { cashTransactions, rooms, buildings } from "@/db/schema";
@@ -42,6 +41,6 @@ export async function GET() {
     totalPengeluaran: credit,
     totalSaldo: debit - credit,
     totalTransaksi: summary?.transactionCount || 0,
-    chartData: chartDataRaw.map(d => ({ name: d.buildingName, total: d.pengeluaran || 0 })),
+    chartData: chartDataRaw.map((d: any) => ({ name: d.buildingName, total: d.pengeluaran || 0 })),
   });
 }
